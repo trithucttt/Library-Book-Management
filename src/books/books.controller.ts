@@ -14,7 +14,6 @@ import {
 import { BooksService } from './books.service';
 import { CreateBookDto } from '../dto/create-book.dto';
 import { UpdateBookDto } from '../dto/update-book.dto';
-import { CreateAuthorDto } from '../dto/create-author.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -63,11 +62,6 @@ export class BooksController {
     } catch (error) {
       throw new BadRequestException(`Error creating book: ${error.message}`);
     }
-  }
-
-  @Post('/author')
-  createAuthor(@Body() createAuthor: CreateAuthorDto) {
-    return this.booksService.createAuthor(createAuthor);
   }
 
   @Get('all')

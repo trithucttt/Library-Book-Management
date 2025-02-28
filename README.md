@@ -1,3 +1,100 @@
+# Book Management System Backend
+
+## Description
+
+The Book Management System backend is built using NestJS with MongoDB as the database, providing robust and scalable RESTful APIs to manage books, authors, and categories.
+
+## Features
+
+- **Book Management:** CRUD operations for books, including support for multiple images.
+- **Author Management:** CRUD operations for authors, along with association with books.
+- **Category Management:** CRUD operations for categories, enabling categorization of books.
+- **Image Upload:** Uploads and stores book images using Cloudinary.
+- **Validation & Error Handling:** Strong validation using class-validator and consistent error responses.
+
+## Tech Stack
+
+- **Backend Framework:** NestJS
+- **Database:** MongoDB (Mongoose ODM)
+- **Image Storage:** Cloudinary
+- **Validation:** class-validator
+- **Storage Handling:** Multer
+
+## API Endpoints
+
+### Book Endpoints
+
+- `POST /books/create` - Create a new book with multiple images.
+- `GET /books` - Get a list of all books.
+- `GET /books/:id` - Get details of a specific book.
+- `PUT /books/:id` - Update book details.
+- `DELETE /books/:id` - Delete a book.
+
+### Author Endpoints
+
+- `POST /authors/create` - Create a new author.
+- `GET /authors` - Get a list of all authors.
+- `PUT /authors/:id` - Update author details.
+- `DELETE /authors/:id` - Delete an author (only if no books are associated).
+
+### Category Endpoints
+
+- `POST /categories/create` - Create a new category.
+- `GET /categories` - Get a list of all categories.
+- `PUT /categories/:id` - Update category details.
+- `DELETE /categories/:id` - Delete a category (only if no books are associated).
+
+## How to Run
+
+1. Clone the repository.
+2. Install dependencies with:
+
+   ```sh
+   npm install
+   ```
+
+3. Set up environment variables in `.env` file.
+4. Run the project in development mode:
+
+   ```sh
+   npm run start:dev
+   ```
+
+## Environment Variables
+
+Create a `.env` file and add the following variables:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+```
+
+## Example Request (Create Book)
+
+```http
+POST /books/create
+```
+
+**Body:**
+
+```json
+{
+  "title": "Sample Book",
+  "description": "A sample book description.",
+  "publishedYear": "2023",
+  "authors": ["authorId1", "authorId2"],
+  "quantity": 10,
+  "categories": ["categoryId1"],
+  "images": ["file1.png", "file2.jpg"]
+}
+```
+
+## License
+
+This project is licensed under the MIT License.
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>

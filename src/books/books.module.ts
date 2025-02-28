@@ -9,6 +9,8 @@ import { User, UserSchema } from 'src/schemas/user.schema';
 import { Loan, LoanSchema } from 'src/schemas/loan.schema';
 import { CategoryService } from './Category/category.service';
 import { CategoryController } from './Category/category.controller';
+import { AuthorController } from './Author/author.controller';
+import { AuthorService } from './Author/author.service';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { CategoryController } from './Category/category.controller';
       { name: Loan.name, schema: LoanSchema },
     ]),
   ],
-  controllers: [BooksController, CategoryController],
-  providers: [BooksService, CategoryService],
+  controllers: [BooksController, CategoryController, AuthorController],
+  providers: [BooksService, CategoryService, AuthorService],
 })
 export class BooksModule {}

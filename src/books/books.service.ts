@@ -10,7 +10,6 @@ import { Book, BookDocument } from 'src/schemas/book.schema';
 import { CreateBookDto } from 'src/dto/create-book.dto';
 import { UpdateBookDto } from 'src/dto/update-book.dto';
 import { Author } from 'src/schemas/author.schema';
-import { CreateAuthorDto } from 'src/dto/create-author.dto';
 import { MessageResponse } from 'src/dto/message-response.dto';
 import { BookInterface } from 'src/interface/book-interface';
 import { ConvertAuthorInterface } from 'src/interface/convertAuthor-interface';
@@ -61,7 +60,17 @@ export class BooksService {
       }
       return new Types.ObjectId(id);
     });
+    if (typeof createBookDto.categories === 'string') {
+      createBookDto.categories = JSON.parse(createBookDto.categories);
+    }
 
+    // Kiểm tra và chuyển đổi từng phần tử trong categories thành ObjectId hợp lệ
+    createBookDto.categories = createBookDto.categories.map((id) => {
+      if (!Types.ObjectId.isValid(id)) {
+        throw new BadRequestException(`Invalid category ID: ${id}`);
+      }
+      return new Types.ObjectId(id);
+    });
     const newBook = new this.bookModel(createBookDto);
     // return newBook.save();
     if (!newBook) {
@@ -77,11 +86,6 @@ export class BooksService {
       { $push: { books: newBook._id } },
     );
     return newBook.save();
-  }
-
-  async createAuthor(createAuthorDto: CreateAuthorDto): Promise<Author> {
-    const newAuthor = new this.authorModel(createAuthorDto);
-    return newAuthor.save();
   }
 
   mapToConvertAuthor(author: Author): ConvertAuthorInterface {
@@ -100,12 +104,14 @@ export class BooksService {
         const convertAuthors = authors.map((author: Author) =>
           this.mapToConvertAuthor(author),
         );
-
+        const categories = await this.getCategoriesByIds(book.categories);
+        const convertCategories = categories.map((category) => category.name);
         return {
           ...book,
           description: book.description || 'No description available',
           publishedYear: book.publishedYear || 'Unknown',
           authors: convertAuthors,
+          categories: convertCategories,
         };
       }),
     );
@@ -121,6 +127,16 @@ export class BooksService {
       .lean()
       .exec();
     return authors;
+  }
+
+  private async getCategoriesByIds(
+    categoryIds: Types.ObjectId[],
+  ): Promise<Category[]> {
+    const categories = await this.categoryModel
+      .find({ _id: { $in: categoryIds } })
+      .lean()
+      .exec();
+    return categories;
   }
 
   async findOneBook(id: string): Promise<MessageResponse> {
@@ -139,12 +155,16 @@ export class BooksService {
       }),
     );
 
+    const categories = await this.getCategoriesByIds(book.categories);
+    const convertCategories = categories.map((category) => category.name);
+
     // Kết hợp book và authors
     const convertBook: ConvertBookInterface = {
       ...book,
       description: book.description || 'No description available',
       publishedYear: book.publishedYear || 'Unknown',
       authors: convertAuthor,
+      categories: convertCategories,
     };
 
     return new MessageResponse(200, 'Success', convertBook);
@@ -196,7 +216,7 @@ export class BooksService {
     if (!book) {
       throw new NotFoundException('Book not found');
     }
-    if (!borrowedBook) {
+    if (borrowedBook) {
       throw new BadRequestException('Book is borrowed cannot delete');
     }
     return this.bookModel.findByIdAndDelete(id).exec();

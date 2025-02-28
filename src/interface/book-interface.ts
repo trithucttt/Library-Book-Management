@@ -11,4 +11,5 @@ export interface BookInterface {
   createdAt: Date;
   quantity: number;
   imageUrl?: string[];
+  categories: Types.ObjectId[];
 }

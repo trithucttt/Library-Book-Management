@@ -10,6 +10,9 @@ export class Category {
   @Prop()
   description?: string;
 
+  @Prop({ default: Date.now })
+  createAt: Date;
+
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Book' }] })
   books: Types.ObjectId[];
 }

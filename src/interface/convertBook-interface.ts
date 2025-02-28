@@ -12,4 +12,5 @@ export interface ConvertBookInterface {
   createdAt: Date;
   quantity: number;
   imageUrl?: string[];
+  categories: string[];
 }
